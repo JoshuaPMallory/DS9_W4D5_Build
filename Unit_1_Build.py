@@ -378,10 +378,6 @@ else:
              ,fontsize = 18
              ,y = 1.15)
 
-#
-
-
-
 
 legend_list = []
 
