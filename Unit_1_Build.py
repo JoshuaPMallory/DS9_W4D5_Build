@@ -355,14 +355,33 @@ for number in range(0, len(subgroup_size), 1):
 
 
 plt.margins(0, 0)
-plt.title(str(county_code_dict[choice[2][0]]) +
-          ' - ' +
-          str(choice[0][0]) +
-          '\n' +
-          'Ages ' +
-          choice[3][0]
-         ,fontsize = 18
-         ,y = 1.15)
+
+
+if len(choice[0]) == 1:
+    plt.title(str(county_code_dict[choice[2][0]]) +
+              ' ' +
+              str(choice[0][0]) +
+              '\n' +
+              'Ages ' +
+              choice[3][0]
+             ,fontsize = 18
+             ,y = 1.15)
+else:
+    plt.title(str(county_code_dict[choice[2][0]]) +
+              ' ' +
+              str(choice[0][0]) +
+              ' - ' +
+              str(choice[0][-1]) +
+              '\n' +
+              'Ages ' +
+              choice[3][0]
+             ,fontsize = 18
+             ,y = 1.15)
+
+#
+
+
+
 
 legend_list = []
 
