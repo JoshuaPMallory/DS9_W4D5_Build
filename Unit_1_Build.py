@@ -3,7 +3,8 @@ import numpy as np
 import pandas as pd
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-
+import re
+import seaborn as sns
 
 path = r'..\Unit_1_Build'
 os.chdir(path)
@@ -82,38 +83,44 @@ df['Age Group'] = df['Age Group'].replace({'1-4 years':   '1 - 4 years'
 # I need a way to filter based on arbitrary stats, e.g. County, Age Group, etc.
 
 # The default values for ALL RESULTS
-years      = range(1999, 2017, 1)
-states     = range(   1,   51, 1)
-counties   = range(6001, 6116, 1)
-age_groups = ['< 1 year'
-             ,'1 - 4 years'
-             ,'5 - 9 years'
-             ,'10 - 14 years'
-             ,'15 - 19 years'
-             ,'20 - 24 years'
-             ,'25 - 34 years'
-             ,'35 - 44 years'
-             ,'45 - 54 years'
-             ,'55 - 64 years'
-             ,'65 - 74 years'
-             ,'75 - 84 years'
-             ,'85+ years'
-             ,'Not Stated'
-             ]
-causes     = df['Cause of death Code'].unique().tolist()
+years        = range(1999, 2017, 1)
+states       = range(   1,   51, 1)
+counties     = range(6001, 6116, 1)
+age_groups   = ['< 1 year'
+               ,'1 - 4 years'
+               ,'5 - 9 years'
+               ,'10 - 14 years'
+               ,'15 - 19 years'
+               ,'20 - 24 years'
+               ,'25 - 34 years'
+               ,'35 - 44 years'
+               ,'45 - 54 years'
+               ,'55 - 64 years'
+               ,'65 - 74 years'
+               ,'75 - 84 years'
+               ,'85+ years'
+               ,'Not Stated'
+               ]
+causes       = df['Cause of death'].unique().tolist()
+causes_codes = df['Cause of death Code'].unique().tolist()
 
-cause_code_dict = pd.DataFrame(df['Cause of death'].unique().tolist()
-                              ,df['Cause of death Code'].unique().tolist()).to_dict('dict')
+default      = [years
+               ,states
+               ,counties
+               ,age_groups
+               ,causes
+               ,causes_codes]
+
+
+
+# Dictionaries that allow me to replace the compact codes with their values
+cause_code_dict  = dict(df[['Cause of death Code', 'Cause of death']].values.tolist())
+county_code_dict = dict(df[['County Code', 'County']].values.tolist())
 
 
 # This prevents errors in the other functions for not passing a list
 # Just makes it simpler for me
 def error_prev(some_list):
-    default = [years
-              ,states
-              ,counties
-              ,age_groups
-              ,causes]
 
     # Converts the input into lists for use, if it's not already a list
     iterator = -1
@@ -145,6 +152,7 @@ def df_graphing(choices):
                  ,choices[2]
                  ,choices[3]
                  ,choices[4]
+                 ,choices[5]
                  ]
         death_sums_by_year.append(df_filter(choice)['Deaths'].sum())
 
@@ -167,7 +175,8 @@ def df_filter(choices):
              ,['State Code',          choices[1]]
              ,['County Code',         choices[2]]
              ,['Age Group',           choices[3]]
-             ,['Cause of death Code', choices[4]]
+             ,['Cause of death',      choices[4]]
+             ,['Cause of death Code', choices[5]]
              ]
 
     # From right to left
@@ -184,6 +193,7 @@ def df_filter(choices):
     filtered_df = filtered_df[filtered_df[filter[2][0]].isin(filter[2][1])]
     filtered_df = filtered_df[filtered_df[filter[3][0]].isin(filter[3][1])]
     filtered_df = filtered_df[filtered_df[filter[4][0]].isin(filter[4][1])]
+    filtered_df = filtered_df[filtered_df[filter[5][0]].isin(filter[5][1])]
 
     return filtered_df
 
@@ -197,15 +207,16 @@ def df_filter(choices):
 
 # ---------------------------------- Output ---------------------------------- #
 
+choice = [1999
+         ,6
+         ,6073
+         ,'85+ years'
+         ,''
+         ,''
+         ]
+
 # ---------- Graph ---------- #
 # For each year, add up the deaths by age group
-
-choice      = [''
-              ,6
-              ,6073
-              ,'45 - 54 years'
-              ,causes
-              ]
 
 plotting_df = df_graphing(choice)
 
@@ -218,25 +229,13 @@ plt.title('All deaths for ages ' +
           str(range(1999, 2017, 1)[0]) +
           ' to ' +
           str(range(1999, 2017, 1)[-1]))
+plt.xlim(1999, 2016)
+# plt.ylim(0, 7000)
 
 plt.show()
 # ---------- Graph ---------- #
 
 # ---------- Donut Plot ---------- #
-
-# We're going to set the title for this to be whichever county it is
-# Then we'll make it show the total population for the circle
-# Then divide the circle into two parts; alive and dead
-
-# All of this will be pre-sorted by year, state, etc.
-
-
-choice      =          [1999
-                       ,6
-                       ,6073
-                       ,'75 - 84 years'
-                       ,causes
-                       ]
 
 filtered_df = df_filter(choice)
 
@@ -248,26 +247,28 @@ dead      = filtered_df['Deaths'].sum()
 
 
 
-
-
 # This is the outer ring of the donut chart showing the living vs the dead for
 # a given subset of the dataframe
-group_names    = ['Alive', 'Dead']
+group_names    = ['Alive', 'Deceased']
 group_size     = [alive, dead]
 
 
 # This is the inner ring showing the 4 most common causes with a misc 5th cause
-# that includes all the others that were missed
-subgroup_names = filtered_df.sort_values(by = ['Deaths'], ascending = False)[:4]
+# that includes all the others that were missed. Then it makes the list of the
+# 5 groups going into the donut chart
+subgroup_names = filtered_df.sort_values(by = ['Deaths'], ascending = False)[:5]
+subgroup_size  = filtered_df.sort_values(by = ['Deaths'], ascending = False)[:5]
 subgroup_names = subgroup_names['Cause of death Code'].tolist()
+subgroup_size  = subgroup_size['Deaths'].tolist()
 
-subgroup_names.append(str(len(filtered_df['Deaths'].sort_values(ascending = False)[4:])) + ' others\ncombined')
 
-# This makes the list of the 5 groups going into the donut chart
-subgroup_size = filtered_df.sort_values(by = ['Deaths'], ascending = False)[:4]
-subgroup_size = subgroup_size['Deaths'].tolist()
 
-subgroup_size.append(filtered_df['Deaths'].sort_values(ascending = False)[4:].sum())
+# Very messy complicated thing that literally only adds in a consolidated misc
+# category if we go over the top 5 causes of death
+if len(filtered_df['Deaths'].sort_values(ascending = False)[5:]) != 0:
+    subgroup_names.append(str(len(filtered_df['Deaths'].sort_values(ascending = False)[5:])) + ' others\ncombined')
+    subgroup_size.append(filtered_df['Deaths'].sort_values(ascending = False)[5:].sum())
+
 
 
 # Create colors
@@ -283,7 +284,7 @@ mpl.rcParams['font.size'] = 9.0
 
 pie, text, perc = ax.pie(group_size
                         ,radius        = 1.5
-                        ,startangle    = 90 + 50
+                        ,startangle    = 320
                         ,labels        = group_names
                         ,labeldistance = 1.1
                         ,autopct       = '%1.2f%%'
@@ -312,11 +313,12 @@ pie2, text2, perc2 = ax.pie(subgroup_size
                            ,labeldistance = 0.8
                            ,autopct       = '%1d%%'
                            ,pctdistance   = 0.45
-                           ,colors        = [d(0.3)
-                                            ,d(0.4)
-                                            ,d(0.5)
-                                            ,d(0.6)
+                           ,colors        = [d(0.9)
+                                            ,d(0.8)
                                             ,d(0.7)
+                                            ,d(0.6)
+                                            ,d(0.5)
+                                            ,d(0.4)
                                             ]
                            )
 plt.setp(pie2
@@ -329,9 +331,9 @@ plt.setp(text2
         ,ha            = "center"
         ,va            = "center")
 
-for tx in text2:
-    rot = tx.get_rotation()
-    tx.set_rotation(rot+90+(1-rot//180)*180)
+for txt in text2:
+    rotation = tx.get_rotation()
+    txt.set_rotation(rotation + 90 + (1 - rotation // 180) * 180)
 
 for number in range(0, len(subgroup_size), 1):
     text2[number].set_fontsize(13)
@@ -339,10 +341,26 @@ for number in range(0, len(subgroup_size), 1):
 
 
 plt.margins(0, 0)
-plt.title('San Diego ' + str(choice[0][0]) + '\n' + 'Ages ' + choice[3][0]
-         ,fontsize = 18)
-plt.legend(pie2, subgroup_names, loc = 'best')
+plt.title(str(county_code_dict[choice[2][0]]) +
+          ' - ' +
+          str(choice[0][0]) +
+          '\n' +
+          'Ages ' +
+          choice[3][0]
+         ,fontsize = 18
+         ,y = 1.15)
 
+legend_list = []
+
+for thing in subgroup_names:
+    if re.match('[0-9]+ others\ncombined', thing):
+        continue
+    legend_list.append(fill(str(thing) + ': ' + str(cause_code_dict[thing])
+                           ,width = 50))
+
+plt.legend(pie2
+          ,legend_list
+          ,bbox_to_anchor = (0.9, 1))
 
 plt.show()
 
@@ -350,7 +368,6 @@ plt.show()
 
 
 # ---------- Seaborn Plot ---------- #
-import seaborn as sns
 
 choice      =          [''
                        ,6
@@ -362,28 +379,20 @@ choice      =          [''
 filtered_df = df_filter(choice)
 
 target   = filtered_df['Deaths']
-features = filtered_df.columns.drop(['Deaths'
-                                    ,'Year'
-                                    ,'Cause of death'
-                                    ,'State'
-                                    ,'State Code'
-                                    ,'County Code'
-                                    ,'Age Group'
-                                    ,'Age Group Code'
-                                    ,'Population'
-                                    ,'Cause of death Code'
-                                    ,'Crude Rate'
-                                    ,'Crude Rate Standard Error'])
+features = filtered_df.drop(['State'
+                            ,'State Code'
+                            ,'County Code'
+                            ,'Age Group Code'
+                            ,'Population'
+                            ,'Cause of death Code'
+                            ,'Crude Rate'
+                            ,'Crude Rate Standard Error'], axis = 1)
 
-plt.figure(figsize = (20, 10))
-for feature in features:
-    plt.scatter(x = feature
-               ,y = target
-               ,data = filtered_df
-               ,alpha = 0.1)
-plt.xticks(rotation = 90)
-plt.xlim(-1, 53)
-plt.ylim(0, 3500)
+# plt.figure(figsize = (20, 10))
+sns.pairplot(features)
+# plt.xticks(rotation = 90)
+# plt.xlim(-1, 53)
+# plt.ylim(0, 3500)
 
 plt.show()
 
@@ -404,6 +413,9 @@ plt.show()
 #
 # world.plot(column='gdp_per_cap');
 
+
 # ---------- California County Map Plot ---------- #
+
+# ---------------------------------- Output ---------------------------------- #
 
 # ---------------------------------- Output ---------------------------------- #
