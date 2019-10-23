@@ -1,4 +1,4 @@
-# Build 1
+# Build 1 - Death and Statistics
 ### Lambda School - Data Science 9
 
 This is my first project for Lambda School's monthly build week.
