@@ -79,6 +79,7 @@ df['Age Group'] = df['Age Group'].replace({'1-4 years':   '1 - 4 years'
 
 
 
+
 # ----------------------------------- Work ----------------------------------- #
 # I need a way to filter based on arbitrary stats, e.g. County, Age Group, etc.
 
@@ -126,9 +127,9 @@ def error_prev(some_list):
     iterator = -1
     for choice in some_list:
         iterator += 1
-        if type(choice) != type([]):
-            some_list[iterator] = [some_list[iterator]]
 
+        if type(choice) != list and type(choice) != range:
+            some_list[iterator] = [some_list[iterator]]
     # If there's blank values, replaces them with the default
     iterator = -1
     for choice in some_list:
@@ -143,6 +144,7 @@ def error_prev(some_list):
 
 # This function is specifically for making a graph that projects
 def df_graphing(choices):
+
     choices            = error_prev(choices)
     death_sums_by_year = []
 
@@ -156,11 +158,9 @@ def df_graphing(choices):
                  ]
         death_sums_by_year.append(df_filter(choice)['Deaths'].sum())
 
-    plotting_df = np.array([df['Year'].unique().tolist()
-                           ,death_sums_by_year]).T
+    plotting_df = np.array([choices[0], death_sums_by_year]).T
     plotting_df = pd.DataFrame(plotting_df
-                              ,columns = ['Year'
-                                         ,'Deaths'])
+                              ,columns = ['Year', 'Deaths'])
 
     return plotting_df
 
@@ -205,6 +205,7 @@ def df_filter(choices):
 
 
 
+
 # ---------------------------------- Output ---------------------------------- #
 
 choice = [1999
@@ -215,6 +216,9 @@ choice = [1999
          ,''
          ]
 
+
+# ---------------------------------- Output ---------------------------------- #
+
 # ---------- Graph ---------- #
 # For each year, add up the deaths by age group
 
@@ -223,14 +227,24 @@ plotting_df = df_graphing(choice)
 
 plt.plot(plotting_df['Year'], plotting_df['Deaths'])
 plt.xticks(rotation = 45)
-plt.title('All deaths for ages ' +
-          choice[3][0] +
-          ' from ' +
-          str(range(1999, 2017, 1)[0]) +
-          ' to ' +
-          str(range(1999, 2017, 1)[-1]))
-plt.xlim(1999, 2016)
-# plt.ylim(0, 7000)
+plt.xlim(choice[0][0], choice[0][-1])
+
+
+if len(choice[0]) == 1:
+    plt.title('All deaths for ages ' +
+              str(choice[3][0]) +
+              ' for ' +
+              str(choice[0][0])
+             )
+else:
+    plt.title('All deaths for ages ' +
+              choice[3][0] +
+              ' from ' +
+              str(choice[0][0]) +
+              ' to ' +
+              str(choice[0][-1])
+             )
+
 
 plt.show()
 # ---------- Graph ---------- #
