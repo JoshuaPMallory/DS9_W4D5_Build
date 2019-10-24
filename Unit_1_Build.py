@@ -346,7 +346,7 @@ plt.setp(text2
         ,va            = "center")
 
 for txt in text2:
-    rotation = tx.get_rotation()
+    rotation = txt.get_rotation()
     txt.set_rotation(rotation + 90 + (1 - rotation // 180) * 180)
 
 for number in range(0, len(subgroup_size), 1):
