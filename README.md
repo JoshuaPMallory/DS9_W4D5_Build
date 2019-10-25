@@ -1,7 +1,10 @@
-# Build 1 - Death and Statistics
+# Death and Statistics
 ### Lambda School - Data Science 9
 
 This is my first project for Lambda School's monthly build week.
-I think the media presents a hostile view of life in the US; that shootings are happening more frequently than ever, that politicians are manipulating us, and that an excess diet of fried eggs is going to give us cancer. It sounds like other countries are taking note as well, as I've even heard of some warning their citizens of “highly frequent” gun violence. But I don't think death is nearly as common or likely as they believe.
 
-By using data gathered from the CDC on deaths in California I intend to give a clear view on death - albeit a very small subset of the larger USA - and it's general probability against the surviving population as well as it's most common causes. I believe the most likely causes of death are cardiac arrest and motor-vehicle collisions and I'll compare that with what I believe most people would worry about; terrorism and homicide. I intend to show whether or not either view is correct.
+I think the media presents a hostile view of life in the US; that shootings are happening more frequently than ever, that politicians and corporations are manipulating us, and that an excess diet of [eggs](https://www.pcrm.org/good-nutrition/nutrition-information/health-concerns-with-eggs 'Physicians Committee: Health Concerns with Eggs') is going to give us cancer. Or, wait... [I guess they're good for you now](https://health.clevelandclinic.org/i-have-cancer-what-should-i-eat-2/ 'Cleveland Clinic: I Have Cancer — What Should I Eat?'). It sounds like [other countries](https://www.washingtonpost.com/world/2019/06/04/china-warns-against-traveling-us-citing-shootings-robberies-theft/ 'Washington Post: China warns against traveling to the U.S., citing \‘shootings, robberies and theft\’') are taking note as well.
+
+I don't think death is nearly as common or likely as they believe so I'm going to be look at deaths in my corner of the world to give a general idea of the state of things in the past 17 years. By using data gathered from the CDC on California deaths I intend to give a clear view on death, it's most commonly talked about causes, and it's general probability against the surviving population. From what I've read in the past I believe the most likely causes of death are heart related illness and motor-vehicle collisions, and I'll compare that with what I believe most people would worry about; homicide and terrorism. (Well, I would do terrorism, but there's actually no listed deaths for terrorism in California, so that makes a great start!)
+
+I intend to show whether or not either view is correct.
