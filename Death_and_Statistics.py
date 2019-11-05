@@ -51,7 +51,7 @@ pd.set_option('display.width',      500)
 # minor things to change still
 
 
-df = pd.read_csv(r'dataframes\CDC Mortality Dataframe California 1999 - 2016.csv', low_memory = False)
+df = pd.read_csv(r'data\CDC Mortality Dataframe California 1999 - 2016.csv', low_memory = False)
 
 df                              = df.drop(['Year Code'], axis = 1)
 
@@ -80,7 +80,7 @@ df['Age Group'] = df['Age Group'].replace({'1-4 years':   '1 - 4 years'
                                           ,'75-84 years': '75 - 84 years'
                                           })
 
-# df.to_csv(r'dataframes\CDC Mortality Dataframe California 1999 - 2016 CLEANED.csv')
+# df.to_csv(r'data\CDC Mortality Dataframe California 1999 - 2016 CLEANED.csv')
 
 # ------------------------------ Data Cleaning ------------------------------ #
 
